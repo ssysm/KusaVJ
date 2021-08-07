@@ -1,0 +1,26 @@
+{
+  "name": "kusa-vj",
+  "version": "1.0.0",
+  "description": "A Very Kusa VJ Software",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "author": "ssysm",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "electron": "^13.1.7",
+    "electron-builder": "^22.11.7"
+  },
+  "dependencies": {
+    "stormdb": "^0.5.1"
+  },
+  "build": {
+    "appId": "com.theeditorstudio.kusavj",
+    "win":{
+      "target":"portable"
+    }
+  }
+}
