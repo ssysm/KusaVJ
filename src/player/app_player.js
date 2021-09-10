@@ -1,11 +1,6 @@
-let player = null;
-let fileinfo = {
-  filename:'',
-  filepath: ''
-}
 window.onload = () =>{
     const fullscreenBtn = document.querySelector('#fullscreen-btn');
-    const bc = new BroadcastChannel('ezvj');
+    const bc = new BroadcastChannel('kusavj');
 
     player = videojs('player', {
         responsive:true,
@@ -14,6 +9,7 @@ window.onload = () =>{
 					abLoopPlugin: {}
 				}
     });
+    player.volume(0.25);
 
     const handleBCMessage = (evt) => {
       const payload = JSON.parse(evt.data);
@@ -50,16 +46,23 @@ window.onload = () =>{
               data:{
                   status: player.paused() ? 'PAUSE' : 'PLAY'
               }
-          }))
+          }));
           break;
         case 'FULLSCREEN':
-          window.ipcApi.requestVideoFullscreen()
+          window.ipcApi.requestVideoFullscreen();
           break;
         case 'SET_TIME':
-          player.currentTime(payload.data.seekToTime)
+          player.currentTime(payload.data.seekToTime);
           break;
         case 'SET_LOOP':
-          player.loop(payload.data.loop)
+          player.loop(payload.data.loop);
+          break;
+        case 'SET_VOL':
+          player.volume(payload.data.vol);
+          break;
+        case 'SKIP_TIME':
+          const direction = payload.data.direction == 'FWD' ? 1 : -1;
+          player.currentTime(player.currentTime() + (direction * payload.data.time));
           break;
       }
     }
@@ -76,6 +79,7 @@ window.onload = () =>{
             paused: player.paused(),
             fileinfo,
             event: {
+              volume:player.volume(),
               currentTime: player.currentTime(),
               totalTime: player.duration()
             }

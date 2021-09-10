@@ -1,163 +1,3 @@
-const StormDB = require("stormdb");
-const fs = require('fs');
-const path = require('path');
-const { app, dialog } = require('electron').remote;
-var dataFilePath = path.join(app.getPath('userData'), 'cuepoints_db.json');
-const engine = new StormDB.localFileEngine(dataFilePath);
-const datastore = new StormDB(engine);
-
-let hotCueBanksElm = document;
-let playlistTableElm = document;
-let playedlistTableElm = document;
-let mainCuePointElm = document;
-let progressCuepointsElm = document;
-
-let hasProgressCueRendered = false;
-
-let playerInfo = {
-    filename:'',
-    currentTime: 0.00,
-    totalTime: 0.00,
-    paused: true,
-    tappingCue: false,
-};
-
-let cuepointInfo = {
-    mainCue: 0.0,
-    hotCues: []
-}
-
-let playlist  = [
-
-];
-
-let playedList = [
-
-];
-
-const bc = new BroadcastChannel('ezvj');
-
-const makeHotCue = (num, timestamp) => {
-    return `
-    <div>
-        <button class="hot-cue" onclick="recallHotCue(${num})">Cuepoint <span>${num}</span>: <span>${fancyTimeFormat(timestamp)}</span></button>
-        <button class="delete-hot-cue" onclick="deleteHotCue(${num})">Delete Cuepoint <span>${num}</span></button>
-    </div>
-    `
-}
-
-const makePlaylistItem = (num, video, renderUp=true, renderDown=true) =>{
-    return `
-    <tr>
-        <td>${num}</td>
-        <td data-path="${video.filepath}">${video.filename}</td>
-        <td>
-            ${renderUp ? `<button class="move-up" onclick="movePlaylistItem(${num},false)">Up</button>`: ''}
-            ${renderDown? `<button class="move-down" onclick="movePlaylistItem(${num},true)">Down</button>` : ''}
-            <button class="pop-from-videolist" onclick="removeFromPlaylist(${num})">DEL</button>
-            <button class="force-play" onclick="forcePlayVideo(${num})">PLAY</button>
-        </td>
-    </tr>`
-}
-
-const makePlayedlistItem = (num, video) =>{
-    return `
-    <tr>
-        <td>${num}</td>
-        <td data-path="${video.filepath}">${video.filename}</td>
-        <td>
-            <button class="pop-from-playedlist" onclick="removeFromPlayedlist(${num})">DEL</button>
-            <button class="push-back-to-playlist" onclick="pushBackToPlaylist(${num})">PUSHBACK</button>
-        </td>
-    </tr>`
-}
-
-const playerSeekTo = (seekToTime) => {
-    bc.postMessage(JSON.stringify({
-        action:'SET_TIME',
-        data:{
-            seekToTime
-        }
-    }))
-} 
-
-const renderHotCueBanks = (hotcues) =>{
-    let HCHtml = '', progressHCHtml = '';
-    for(let i = 0; i < hotcues.length; i++) {
-        HCHtml += makeHotCue(i,hotcues[i].timestamp);
-        progressHCHtml += `
-            <div class="slider-cuepoint" style="left:${hotcues[i].timestamp * (100 / playerInfo.totalTime)}%;">
-                <button class="hot-cue" onclick="recallHotCue(${i})">Recall</button>
-                <br>
-                <span>HC#${i}</span>
-                <br>
-                <span>&#8595;</span>
-            </div>
-        `
-    }
-    hotCueBanksElm.innerHTML = HCHtml;
-    progressCuepointsElm.innerHTML = progressHCHtml;
-    if(playerInfo.totalTime > 0.01){
-        hasProgressCueRendered = true;
-    }
-}
-
-const renderPlaylist = () =>{
-    let plHtml = '';
-    for(let i = 0; i < playlist.length; i++){
-        plHtml += makePlaylistItem(i,playlist[i], i !== 0, i !== playlist.length - 1);
-    }
-    playlistTableElm.innerHTML = plHtml;
-    plHtml = '';
-    for(let i = 0; i< playedList.length; i++){
-        plHtml += makePlayedlistItem(i,playedList[i]);
-    }
-    playedlistTableElm.innerHTML = plHtml;
-}
-
-const saveCuePoints = () =>{
-    datastore.set(playerInfo.filename, cuepointInfo);
-    datastore.save();
-}
-
-const loadCuePoints = () =>{
-    const result = datastore.get(playerInfo.filename);
-    try{
-        cuepointInfo = result.value();
-    }catch(e){
-        console.log('no cue point')
-    }
-};
-
-const resetPlayer = () => {
-    cuepointInfo = {
-        mainCue: 0.0,
-        hotCues: []
-    }
-    playerInfo = {
-        filename:'',
-        currentTime: 0.00,
-        totalTime: 0.00,
-        paused: true,
-        tappingCue: false,
-    };     
-    hasProgressCueRendered = false;
-    renderPlaylist();
-    renderHotCueBanks(cuepointInfo.hotCues);
-};
-
-const serializePlaylist = () =>{
-    const playlistStr = JSON.stringify(playlist)
-    return playlistStr;
-};
-
-const deserializePlaylist = (jsonString) =>{
-    const payload = JSON.parse(jsonString);
-    playlist = payload;
-    renderPlaylist();
-    resetPlayer();
-}
-
 window.onload = () =>{
     const videoInputElm = document.querySelector('#video_input');
     const playPuaseBtnElm = document.querySelector('#play-puase-button');
@@ -179,6 +19,12 @@ window.onload = () =>{
     const exportPlaylistBtnElm = document.querySelector('#export-playlist');
     const importPlaylistBtnElm = document.querySelector('#import-playlist');
     progressCuepointsElm = document.querySelector('#progress-cuepoints');
+    const volPercentElm = document.querySelector('#volume-percent');
+    const volSliderElm = document.querySelector('#volume-slider');
+    const dncOptionElm = document.querySelector('#dnc-option');
+    const adjustTimeScalerInputElm = document.querySelector('#adjust-time-scaler');
+    const skipFwdBtnElm = document.querySelector('#skip-forward-btn');
+    const skipBwdBtnElm = document.querySelector('#skip-backward-btn');
 
     const handleBCMessage = (evt) => {
         const payload = JSON.parse(evt.data);
@@ -189,23 +35,31 @@ window.onload = () =>{
                 case 'PAUSE':
                     playPuaseBtnElm.innerHTML = 'Play';
                     playerInfo.paused = true;
+                    setMainCueBtnElm.classList.add('blink');
                 break;
                 case 'PLAY':
                     playPuaseBtnElm.innerHTML = 'Pause';
                     playerInfo.paused = false;
+                    setMainCueBtnElm.classList.remove('blink');
                 break;  
                 case 'END':
                     playPuaseBtnElm.innerHTML = 'Play';
                     playerInfo.paused = true;
-                    if(!loopOptionElm.checked){
+                    if(!loopOptionElm.checked && !dncOptionElm.checked){
                         handleCutToNext();
-                    }    
+                    }
                 break;
             }
             break;
             case 'TIME_UPDATE':
-                currentTimeElm.innerHTML = fancyTimeFormat(payload.data.event.currentTime);
-                totalTimeElm.innerHTML = fancyTimeFormat(payload.data.event.totalTime);
+                const playerCurrentTime = fancyTimeFormat(payload.data.event.currentTime);
+                if(playerCurrentTime !== currentTimeElm.innerHTML){
+                    currentTimeElm.innerHTML = playerCurrentTime
+                }
+                const playerTotalTime = fancyTimeFormat(payload.data.event.totalTime);
+                if(playerTotalTime !== totalTimeElm.innerHTML){
+                    totalTimeElm.innerHTML = playerTotalTime
+                }
                 playerInfo.currentTime = payload.data.event.currentTime;
                 playerInfo.totalTime = payload.data.event.totalTime;
                 handleProgressSliderUpdate(playerInfo);
@@ -213,7 +67,8 @@ window.onload = () =>{
                 playerInfo.paused = payload.data.paused;
                 playerInfo.filename = payload.data.fileinfo.filename;
                 onDeckElm.innerHTML = payload.data.fileinfo.filename;
-
+                volPercentElm.innerHTML = parseInt(payload.data.event.volume * 100)
+                volSliderElm.value = payload.data.event.volume;
                 if(!hasProgressCueRendered){
                     renderHotCueBanks(cuepointInfo.hotCues);
                 }
@@ -356,6 +211,38 @@ window.onload = () =>{
         }
     }
 
+    const handleVolumeChange = (evt) =>{
+        const vol = evt.target.value;
+        bc.postMessage(JSON.stringify({
+            action:'SET_VOL',
+            data:{
+                vol
+            }
+        }));
+    }
+
+    const handleSkipFwd = (evt) =>{
+        const skipScaler = adjustTimeScalerInputElm.value;
+        bc.postMessage(JSON.stringify({
+            action: 'SKIP_TIME',
+            data: {
+                direction: 'FWD',
+                time: skipScaler
+            }
+        }))
+    };
+
+    const handleSkipBwd = (evt) =>{
+        const skipScaler = adjustTimeScalerInputElm.value;
+        bc.postMessage(JSON.stringify({
+            action: 'SKIP_TIME',
+            data: {
+                direction: 'BWD',
+                time: skipScaler
+            }
+        }))
+    }
+
     videoInputElm.addEventListener('change',handleVideoInput);
     playPuaseBtnElm.addEventListener('click',handlePlayPause);
     reqFullScreenBtnElm.addEventListener('click',handleReqFullscreen);
@@ -369,69 +256,8 @@ window.onload = () =>{
     cutToNextBtnElm.addEventListener('click', handleCutToNext);
     exportPlaylistBtnElm.addEventListener('click',handleExportPlaylist);
     importPlaylistBtnElm.addEventListener('click',handleImportPlaylist);
+    volSliderElm.addEventListener('change', handleVolumeChange);
+    skipFwdBtnElm.addEventListener('click', handleSkipFwd);
+    skipBwdBtnElm.addEventListener('click',handleSkipBwd);
     bc.onmessage = handleBCMessage;
-}
-
-const recallHotCue = (num) =>{
-    playerSeekTo(cuepointInfo.hotCues[num].timestamp)
-};
-
-const deleteHotCue = (num) => {
-    cuepointInfo.hotCues.splice(num, 1);
-    renderHotCueBanks(cuepointInfo.hotCues)
-    saveCuePoints();
-}
-
-const forcePlayVideo = (num)=>{
-    resetPlayer();
-    const fileinfo = playlist[num];
-    playerInfo.filename = fileinfo.filename;
-    loadCuePoints();
-    renderHotCueBanks(cuepointInfo.hotCues);
-    mainCuePointElm.innerHTML = fancyTimeFormat(cuepointInfo.mainCue);
-    playedList.push(playlist[num]);
-    playlist.splice(num, 1);
-    bc.postMessage(JSON.stringify({
-        action:'PLAY_VIDEO',
-        data:{
-            path:fileinfo.filepath,
-            filename: fileinfo.filename,
-            startTime: cuepointInfo.mainCue
-        }
-    }))
-    renderPlaylist();
-}
-
-const removeFromPlaylist = (num) => {
-    playlist.splice(num, 1);
-    renderPlaylist();
-}
-
-const removeFromPlayedlist = (num) =>{
-    playedList.splice(num, 1);
-    renderPlaylist();
-}
-
-const pushBackToPlaylist = (num) =>{
-    playlist.push(playedList[num])
-    playedList.splice(num, 1);
-    renderPlaylist();
-}
-
-/**
- * Move Playlist Item
- * @param {number} num idx
- * @param {boolean} dir false = up, true = down
- */
-const movePlaylistItem = (num, dir) => {
-    if(!dir){ // move item up
-        const tempItem = playlist[num-1];
-        playlist[num-1] = playlist[num];
-        playlist[num] = tempItem;
-    }else{ // move item down
-        const tempItem = playlist[num+1];
-        playlist[num+1] = playlist[num];
-        playlist[num] = tempItem;
-    }
-    renderPlaylist();
 }

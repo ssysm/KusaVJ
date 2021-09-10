@@ -1,26 +1,52 @@
 {
   "name": "kusa-vj",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Very Kusa VJ Software",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "build": "electron-builder"
   },
   "author": "ssysm",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ssysm/KusaVJ.git"
+  },
   "license": "GPL-3.0",
   "devDependencies": {
+    "dotenv": "^10.0.0",
     "electron": "^13.1.7",
-    "electron-builder": "^22.11.7"
+    "electron-builder": "^22.11.7",
+    "electron-notarize": "^1.1.1"
   },
   "dependencies": {
-    "stormdb": "^0.5.1"
+    "@electron/remote": "^1.2.1",
+    "foundation-sites": "^6.7.2",
+    "stormdb": "^0.5.1",
+    "video.js": "^7.14.3",
+    "videojs-abloop": "^1.2.0"
   },
   "build": {
     "appId": "com.theeditorstudio.kusavj",
-    "win":{
-      "target":"portable"
-    }
+    "productName": "KusaVJ",
+    "mac": {
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "category": "public.app-category.utilities"
+    },
+    "dmg":{
+      "sign": false
+    },
+    "win": {
+      "target": "portable"
+    },
+    "linux": {
+      "target": "AppImage",
+      "vendor": "KusaLand",
+      "category": "AudioVideo"
+    },
+    "afterSign": "build_config/after_sign_hook.js"
   }
 }

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
-    <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
-    <script src="https://unpkg.com/videojs-abloop/dist/videojs-abloop.min.js"></script>
+    <link href="node_modules/video.js/dist/video-js.min.css" rel="stylesheet" />
+    <script src="node_modules/video.js/dist/video.min.js"></script>
+    <script src="node_modules/videojs-abloop/dist/videojs-abloop.min.js"></script>
     <title>KusaVJ Player</title>
 </head>
 <body>
@@ -17,6 +17,7 @@
         >
     </div>
     <button id='fullscreen-btn'>Full Screen</button>
-    <script src="app_player.js"></script>
+    <script src="src/player/global.js"></script>
+    <script src="src/player/app_player.js"></script>
 </body>
 </html>

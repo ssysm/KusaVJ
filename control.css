@@ -1,11 +1,9 @@
-body{
-    padding: 10px;
-}
-
-.slidecontainer{
-    width: 98%;
+.slider-container{
+    width: 100%;
     position: fixed;
     bottom: 0%;
+    height: 100px;
+    background-color: #00e676;
 }
 
 .slider {
@@ -17,6 +15,7 @@ body{
     opacity: 0.7;
     -webkit-transition: .2s;
     transition: opacity .2s;
+    margin: 0;
 }
 
 .slider:hover {
@@ -41,5 +40,59 @@ body{
 
 .slider-cuepoint{
     position: absolute;
-    bottom: 32px;
+    bottom: 0px;
+}
+
+.control-box{
+    margin: 15px 0px;
+}
+
+.control-container{
+    margin-bottom: 150px;
+    padding: 10px;
+}
+
+.player-pipeline-control{
+    display: flex;
+}
+
+.player-pipeline-control div{
+    margin: 0 5px;
+}
+
+.blink {
+    animation: blink_kf 1s step-start infinite;
+}
+
+@keyframes blink_kf {
+    50% {
+      color: rgb(255, 238, 0);
+    }
+}
+
+#adjust-time-scaler{
+    width: 50px;
+}
+
+.display_block{
+    display:block;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }

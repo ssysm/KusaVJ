@@ -4,54 +4,108 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css" integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5" crossorigin="anonymous">
+    <link rel="stylesheet" href="node_modules/foundation-sites/dist/css/foundation.min.css">
     <link rel="stylesheet" href="control.css">
     <title>KusaVJ Control</title>
 </head>
 <body>
-    <div class="pure-g">
-        <div class="pure-u-1-2">
-            <div>
+    <div class="grid-x control-container">
+        <div class="cell medium-6">
+            <!--On Deck-->
+            <div class="control-box">
                 <span>On Deck: <span id="current-filename"></span></span>
             </div>
-            <div>
-                <button id="play-puase-button">Play</button>
-                <button id="cut-to-next">CUT</button>
-                <button id="req-fullscreen-button">Request Fullscreen</button>
-                <label for="loop">Loop Video</label>
-                <input type="checkbox" id="loop" name="loop" value="loop">
-            </div>
-            <div>
-                Elapsed:<span id="current-time">0</span>&Tab;
-                Duration:<span id="total-time">0</span>
-            </div>
-            <div>
-                <div>
-                    <button id="set-zero">ZERO</button>
-                    <button id="tap-cue">TAP CUE</button>
-                    <button id="set-main-cue">CUE</button>
-                    <span>Time: <span id="main-cue-point">0:0</span></span>
+            <!--Time-->
+            <div class="control-box grid-x">
+                <div class="cell">
+                    Elapsed:<span id="current-time">0</span>
+                    Duration:<span id="total-time">0</span>
                 </div>
-                <div>
-                    <span style="display:block">Hot Cue Bank</span>
-                    <button id="add-hot-cue">Add Hot Cue</button>
-                    <div id="hot-cue-banks">
+            </div>
+            <!--Player Control-->
+            <div class="control-box">
+                <div class="button-group">
+                    <button class="button" id="play-puase-button">Play</button>
+                    <button class="warning button" id="cut-to-next">CUT</button>
+                    <button class="success button" id="req-fullscreen-button">Request Fullscreen</button>
+                </div>
+                <div class="grid-x">
+                    <div class="cell small-4">
+                        <label for="loop">Loop Video</label>
+                        <div class="switch">
+                            <input class="switch-input" id="loop" type="checkbox" name="loop">
+                            <label class="switch-paddle" for="loop">
+                              <span class="show-for-sr">Loop Video</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="cell small-4">
+                        <label for="dnc-option">Do Not CUT To Next</label>
+                        <div class="switch small-4">
+                            <input class="switch-input" id="dnc-option" type="checkbox" name="dnc-option">
+                            <label class="switch-paddle" for="dnc-option">
+                              <span class="show-for-sr">Do Not Cut</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
+            <!--Skip Time-->
+            <div class="control-box grid-x">
+                <div class="cell small-3">
+                    <label for="adjust-time">Skip Time(Sec.):</label>
+                    <input type="number" min="1" value="5" name="adjust-time" id="adjust-time-scaler">
+                </div>
+                <div class="cell button-group small-9">
+                    <input type="button" class="button" value="Backward" id="skip-backward-btn">
+                    <input type="button" class="button" value="Forward" id="skip-forward-btn">
+                </div>
+            </div>
+            <!--Volume-->
+            <div class="control-box">
+                <div id="voume-slider-container">
+                    <span>Volume: <span id="volume-percent">NaN</span>%</span>
+                    <input type="range" min="0" max="1" value="0" class="volume-slider" step="0.01" id="volume-slider">
+                </div>
+            </div>
+            <!--Main Cue-->
+            <div class="control-box">
+                <span>Main Cue Time: <span id="main-cue-point">0:0</span></span>
+                <div class="button-group">
+                    <button class="button" id="set-zero">ZERO</button>
+                    <button class="button" id="tap-cue">TAP CUE</button>
+                    <button class="button" id="set-main-cue">CUE</button>
+                </div>
+            </div>
+            <!--Hot Cue-->
+            <div class="control-box">
+                <span class="display_block">Hot Cue Bank</span>
+                <button class="button" id="add-hot-cue">Add Hot Cue</button>
+                <div id="hot-cue-banks">
+                </div>
+            </div>
         </div>
-        <div class="pure-u-1-2">
+        <div class="cell medium-6">
             <div>
                 <p>Playlist</p>
-                <div>
-                    <button id="export-playlist">Export</button>
-                    <button id="import-playlist">Import</button>
+                <div class="button-group">
+                    <div>
+                        <label for="video_input" class="button">Add Video To Playlist</label>
+                        <input type="file" id="video_input" class="show-for-sr" name="video" accept="video/*">
+                    </div>
+                    <div class="dropdown">
+                        <button class="button" type="button">Import/Export Playlist</button>
+                        <div class="dropdown-content" id="import-export-dropdown" data-dropdown data-hover="true" data-hover-pane="true">
+                            <div class="button-group">
+                                <button class="button" id="export-playlist">Export Playlist</button>
+                                <button class="button" id="import-playlist">Import Playlist</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div>
-                <label for="video">Add to playlist:</label>
-                <input type="file" id="video_input" name="video" accept="video/*">
-                <table class="pure-table">
+                <table class="stack">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -63,7 +117,7 @@
                     </tbody>
                 </table>
                 <p>PlayED list</p>
-                <table class="pure-table">
+                <table class="stack">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -77,12 +131,16 @@
             </div>
         </div>
     </div>
-    <div class="slidecontainer">
+    <div class="slider-container">
         <div id="progress-cuepoints">
         </div>
         <input type="range" min="1" max="100" value="0" class="slider" step="0.1" id="video-slider">
     </div>
     <script src="libs/format_time.js"></script>
-    <script src="app_control.js"></script>
+    <script src="src/control/global.js"></script>
+    <script src="src/control/global_player.js"></script>
+    <script src="src/control/global_playlist.js"></script>
+    <script src="src/control/global_cue.js"></script>
+    <script src="src/control/app_control.js"></script>
 </body>
 </html>
