@@ -4,9 +4,15 @@ window.onload = () =>{
 
     player = videojs('player', {
         responsive:true,
+        controls:true,
         aspectRatio: '16:9',
+        techOrder: ['html5'],
         plugins: {
-					abLoopPlugin: {}
+					abLoopPlugin: {},
+          watermark:{
+            image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg== ',
+            position: 'bottom-right'
+          }
 				}
     });
     player.volume(0.25);

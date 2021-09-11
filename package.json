@@ -24,7 +24,8 @@
     "foundation-sites": "^6.7.2",
     "stormdb": "^0.5.1",
     "video.js": "^7.14.3",
-    "videojs-abloop": "^1.2.0"
+    "videojs-abloop": "^1.2.0",
+    "videojs-watermark": "^2.0.0"
   },
   "build": {
     "appId": "com.theeditorstudio.kusavj",
@@ -32,15 +33,16 @@
     "mac": {
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
+      "entitlements": "build_config/mac/entitlements.mac.plist",
+      "entitlementsInherit": "build_config/mac/entitlements.mac.plist",
       "category": "public.app-category.utilities"
     },
-    "dmg":{
+    "dmg": {
       "sign": false
     },
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "publisherName": "KusaLand"
     },
     "linux": {
       "target": "AppImage",

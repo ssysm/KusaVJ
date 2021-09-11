@@ -2,12 +2,16 @@ const makePlaylistItem = (num, video, renderUp=true, renderDown=true) =>{
     return `
     <tr>
         <td>${num}</td>
-        <td data-path="${video.filepath}">${video.filename}</td>
-        <td>
+        <td data-path="${video.filepath}" class="playlist-filename-container">
+            <div class="playlist-filename-container-div">
+            <span>${video.filename}</span>
+            </div>
+        </td>
+        <td class="button-group">
+            <button class="force-play button success" onclick="forcePlayVideo(${num})">PLAY</button>
             ${renderUp ? `<button class="move-up button" onclick="movePlaylistItem(${num},false)">Up</button>`: ''}
             ${renderDown? `<button class="move-down button" onclick="movePlaylistItem(${num},true)">Down</button>` : ''}
-            <button class="pop-from-videolist button" onclick="removeFromPlaylist(${num})">DEL</button>
-            <button class="force-play button" onclick="forcePlayVideo(${num})">PLAY</button>
+            <button class="pop-from-videolist button alert" onclick="removeFromPlaylist(${num})">DEL</button>
         </td>
     </tr>`
 }
@@ -16,9 +20,13 @@ const makePlayedlistItem = (num, video) =>{
     return `
     <tr>
         <td>${num}</td>
-        <td data-path="${video.filepath}">${video.filename}</td>
-        <td>
-            <button class="pop-from-playedlist button" onclick="removeFromPlayedlist(${num})">DEL</button>
+        <td data-path="${video.filepath}" class="playlist-filename-container">
+            <div class="playlist-filename-container-div">
+                <span>${video.filename}</span>
+            </div>
+        </td>
+        <td class="button-group">
+            <button class="pop-from-playedlist button alert" onclick="removeFromPlayedlist(${num})">DEL</button>
             <button class="push-back-to-playlist button" onclick="pushBackToPlaylist(${num})">PUSHBACK</button>
         </td>
     </tr>`

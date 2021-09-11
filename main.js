@@ -1,17 +1,20 @@
 const { app, ipcMain, BrowserWindow } = require('electron')
 const path = require('path');
-require('@electron/remote/main').initialize()
+require('@electron/remote/main').initialize();
 const prod = app.isPackaged;
 // Keep a global reference of the windows object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let playerWindow;
 let controlWindow;
+let controlWindowSize = {
+    height: 800,
+    width: 1100
+}
 
 function createWindow() {
     // Create the browser window.
     playerWindow = new BrowserWindow({ width: 800, height: 600,
         webPreferences: {
-            sandbox:true,
             webSecurity:true,
             nodeIntegration: false, // is default value after Electron v5
             contextIsolation: true, // protect against prototype pollution
@@ -21,10 +24,10 @@ function createWindow() {
     });
     
     controlWindow = new BrowserWindow({ 
-        width: 1024,
-        height: 768,
-        minHeight: 768,
-        minWidth: 1024,
+        width: controlWindowSize.width,
+        height: controlWindowSize.height,
+        minHeight: controlWindowSize.height,
+        minWidth: controlWindowSize.width,
         webPreferences: {
             webSecurity:true,
             nodeIntegration: true, 
@@ -34,10 +37,10 @@ function createWindow() {
     });
 
     // and load the index.html of the app.
-    playerWindow.loadFile('player.html')
+    playerWindow.loadFile('player.html');
 
     // and load the second window.
-    controlWindow.loadFile('control.html')
+    controlWindow.loadFile('control.html');
 
     // Emitted when the window is closed.
     controlWindow.on('closed', function () {
@@ -47,7 +50,7 @@ function createWindow() {
         controlWindow = null;
         playerWindow = null;
         if (process.platform !== 'darwin') app.quit()
-    })
+    });
 
     playerWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows
@@ -56,7 +59,7 @@ function createWindow() {
         controlWindow = null;
         playerWindow = null;
         if (process.platform !== 'darwin') app.quit()
-    })
+    });
 
 
     ipcMain.on('remote-fullscreen', (evt,arg)=>{

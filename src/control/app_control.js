@@ -25,6 +25,10 @@ window.onload = () =>{
     const adjustTimeScalerInputElm = document.querySelector('#adjust-time-scaler');
     const skipFwdBtnElm = document.querySelector('#skip-forward-btn');
     const skipBwdBtnElm = document.querySelector('#skip-backward-btn');
+    const aboutBtnElm = document.querySelector('#about-btn');
+    const versionIdElm = document.querySelector('#version_id');
+
+    versionIdElm.innerHTML = appVersion;
 
     const handleBCMessage = (evt) => {
         const payload = JSON.parse(evt.data);
@@ -241,6 +245,21 @@ window.onload = () =>{
                 time: skipScaler
             }
         }))
+    };
+    
+    const handleOpenAboutPage = (evt) => {
+        const remote = require('electron').remote;
+        const BrowserWindow = remote.BrowserWindow;
+        const win = new BrowserWindow({
+            height: 500,
+            width: 800,
+            webPreferences:{
+                nodeIntegration:false,
+                sandbox:true,
+                contextIsolation:true
+            }
+        });
+        win.loadFile('about.html')
     }
 
     videoInputElm.addEventListener('change',handleVideoInput);
@@ -259,5 +278,6 @@ window.onload = () =>{
     volSliderElm.addEventListener('change', handleVolumeChange);
     skipFwdBtnElm.addEventListener('click', handleSkipFwd);
     skipBwdBtnElm.addEventListener('click',handleSkipBwd);
+    aboutBtnElm.addEventListener('click', handleOpenAboutPage);
     bc.onmessage = handleBCMessage;
 }

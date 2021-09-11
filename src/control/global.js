@@ -5,6 +5,7 @@ const { app, dialog } = require('@electron/remote')
 var dataFilePath = path.join(app.getPath('userData'), 'cuepoints_db.json');
 const engine = new StormDB.localFileEngine(dataFilePath);
 const datastore = new StormDB(engine);
+const appVersion = app.getVersion();
 
 let hotCueBanksElm = document;
 let playlistTableElm = document;

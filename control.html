@@ -5,12 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="node_modules/foundation-sites/dist/css/foundation.min.css">
-    <link rel="stylesheet" href="control.css">
+    <link rel="stylesheet" href="libs/dropdown.css">
+    <link rel="stylesheet" href="libs/slider.css">
+    <link rel="stylesheet" href="src/control/control.css">
     <title>KusaVJ Control</title>
 </head>
 <body>
     <div class="grid-x control-container">
-        <div class="cell medium-6">
+        <div class="cell medium-5">
             <!--On Deck-->
             <div class="control-box">
                 <span>On Deck: <span id="current-filename"></span></span>
@@ -18,8 +20,8 @@
             <!--Time-->
             <div class="control-box grid-x">
                 <div class="cell">
-                    Elapsed:<span id="current-time">0</span>
-                    Duration:<span id="total-time">0</span>
+                    Elapsed:<span id="current-time">0:0</span>
+                    Duration:<span id="total-time">0:0</span>
                 </div>
             </div>
             <!--Player Control-->
@@ -54,7 +56,7 @@
             <div class="control-box grid-x">
                 <div class="cell small-3">
                     <label for="adjust-time">Skip Time(Sec.):</label>
-                    <input type="number" min="1" value="5" name="adjust-time" id="adjust-time-scaler">
+                    <input type="number" min="1" value="2" name="adjust-time" id="adjust-time-scaler">
                 </div>
                 <div class="cell button-group small-9">
                     <input type="button" class="button" value="Backward" id="skip-backward-btn">
@@ -85,7 +87,8 @@
                 </div>
             </div>
         </div>
-        <div class="cell medium-6">
+        <div class="cell medium-7">
+            <!--Playlist Import/Export/Add To-->
             <div>
                 <p>Playlist</p>
                 <div class="button-group">
@@ -104,6 +107,7 @@
                     </div>
                 </div>
             </div>
+            <!--Play/ed list-->
             <div>
                 <table class="stack">
                     <thead>
@@ -129,13 +133,20 @@
                     </tbody>
                 </table>
             </div>
+            <hr>
+            <div>
+                <a class="button small" href="#" id="about-btn">About KusaVJ</a>
+                <span class="label">KusaVJ Version <span id="version_id"></span></span>
+            </div>
         </div>
     </div>
+    <!--Progress Container/Hot Cue Drop-->
     <div class="slider-container">
         <div id="progress-cuepoints">
         </div>
         <input type="range" min="1" max="100" value="0" class="slider" step="0.1" id="video-slider">
     </div>
+    <!--Script-->
     <script src="libs/format_time.js"></script>
     <script src="src/control/global.js"></script>
     <script src="src/control/global_player.js"></script>

@@ -1,0 +1,48 @@
+.slider-cuepoint{
+    position: absolute;
+    bottom: 0px;
+}
+
+.control-box{
+    margin: 15px 0px;
+}
+
+.control-container{
+    margin-bottom: -150px;
+    padding: 10px;
+}
+
+.player-pipeline-control{
+    display: flex;
+}
+
+.player-pipeline-control div{
+    margin: 0 5px;
+}
+
+.blink {
+    animation: blink_kf 1s step-start infinite;
+}
+
+@keyframes blink_kf {
+    50% {
+      color: #ffae00;
+    }
+}
+
+#adjust-time-scaler{
+    width: 50px;
+}
+
+.display_block{
+    display:block;
+}
+
+.playlist-filename-container{
+    width: 50%;
+    overflow:hidden;
+}
+
+.volume-slider{
+    width: 150px;
+}
